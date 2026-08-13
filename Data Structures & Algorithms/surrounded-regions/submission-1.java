@@ -1,0 +1,67 @@
+class Solution {
+    public void solve(char[][] board) {
+        boolean[][] hasEdgeAccess = new boolean[board.length][board[0].length];
+        Queue<int[]> bfsQ = new ArrayDeque<>();
+
+        for(int i=0;i<board.length;i++) {
+            if(board[i][0] == 'O') {
+                hasEdgeAccess[i][0] = true;
+                bfsQ.add(new int[]{i, 0});
+            }
+            if(board[i][board[0].length - 1] == 'O') {
+                hasEdgeAccess[i][board[0].length-1] = true;
+                bfsQ.add(new int[]{i, board[0].length-1});
+            }
+        }
+
+        for(int i=0;i<board[0].length;i++) {
+            if(board[0][i] == 'O') {
+                hasEdgeAccess[0][i] = true;
+                bfsQ.add(new int[]{0, i});
+            }
+            if(board[board.length - 1][i] == 'O') {
+                hasEdgeAccess[board.length-1][i] = true;
+                bfsQ.add(new int[]{board.length-1, i});
+            }
+        }
+
+        bfs(board, hasEdgeAccess, bfsQ);
+    }
+
+    private static int[][] DIRECTIONS = {{0,1}, {1,0}, {0,-1}, {-1,0}};
+    void bfs(char[][] board, boolean[][] hasEdgeAccess, Queue<int[]> bfsQ) {
+        while(!bfsQ.isEmpty()) {
+            int[] cur = bfsQ.poll();
+            int curx = cur[0];
+            int cury = cur[1];
+
+            for(int[] direction : DIRECTIONS) {
+                int nextx = curx + direction[0];
+                int nexty = cury + direction[1];
+
+                if(
+                    nextx < 0 ||
+                    nexty < 0 ||
+                    nextx >= board.length ||
+                    nexty >= board[0].length ||
+                    board[nextx][nexty] == 'X'
+                ) {
+                    continue;
+                }
+
+                if(!hasEdgeAccess[nextx][nexty]) {
+                    hasEdgeAccess[nextx][nexty] = true;
+                    bfsQ.add(new int[]{nextx, nexty});
+                }
+            }
+        }
+
+        for(int i=0;i<board.length;i++) {
+            for(int j=0;j<board[0].length;j++) {
+                if(board[i][j] == 'O' && !hasEdgeAccess[i][j]) {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+    }
+}
